@@ -1,0 +1,255 @@
+<html>
+  <head>
+        <script src="https://www.gstatic.com/firebasejs/7.23.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.23.0/firebase-firestore.js"></script>
+    <style>
+.column {
+  width: 30%;
+  margin: 0 10px;
+  text-align: left;
+  border: 1px solid #dadada;
+  font-family: "Roboto", sans-serif;
+  padding: 10px 5px 5px 25px;
+  float: left; /* Add this to make the divs appear in columns */
+}
+
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+  font-family: "Roboto", sans-serif;
+  padding: 10px 15px 20px 25px;
+}
+
+button {
+  border: none;
+  background-color: rgba(0, 0, 0, 0.95);
+  color: white;
+  padding: 8px 16px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  font-family: "Roboto", sans-serif;
+  border-radius: 10px;
+}
+
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  font-family: "Roboto", sans-serif;
+  font-weight: bold;
+  list-style-type: circle;
+}
+
+li {
+  margin: 4px;
+  padding: 8px;
+}
+
+li:hover {
+  background-color: #eee;
+}
+
+select {
+  margin: 4px;
+  padding: 8px;
+  border: 1px solid #ddd;
+}
+
+#header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100px;
+  background-color: rgba(0, 0, 0, 0.95);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* Add this to align the text to the left */
+}
+
+#header-content {
+  display: flex;
+  width: 95%;
+  margin: 0 auto;
+  justify-content: space-between; /* Add this to distribute the divs evenly across the width of the page */
+}
+
+#header-text {
+  flex: 1;
+  text-align: left;
+  font-size: 18px;
+  margin-left: 20px;
+  font-family: "Roboto", sans-serif;
+}
+
+#header-clock {
+  flex: 1;
+  text-align: right;
+  font-size: 18px;
+  margin-right: 20px;
+  font-family: "Roboto", sans-serif;
+}
+
+#header2 {
+  height: 150px;
+}
+    </style>
+  </head>
+  <body>
+   <div id="header">
+    <div id="header-content">
+      <div id="header-text">Production Dashboard</div>
+      <div id="header-clock"></div>
+    </div>
+  </div>
+  <h1 id="header2"></h1>
+    <div class="row">
+      <div class="column">
+        <h2>Wax Seals</h2>
+        <form onsubmit="addToList(event, 'column1')">
+          <input type="text" id="column1Input" />
+          <button type="submit">Submit</button>
+        </form>
+        <ul id="column1List"></ul>
+      </div>
+      <div class="column">
+       <h2>Envelopes</h2>
+        <form onsubmit="addToList(event, 'column2')">
+          <input type="text" id="column2Input" />
+        <button type="submit">Submit</button>
+      </form>
+      <ul id="column2List"></ul>
+    </div>
+    <div class="column">
+       <h2>Urgent</h2>
+      <form onsubmit="addToList(event, 'column3')">
+        <input type="text" id="column3Input" />
+        <button type="submit">Submit</button>
+      </form>
+      <ul id="column3List"></ul>
+    </div>
+  </div>
+    <script>
+  // Initialize the Firebase app
+  firebase.initializeApp({
+    apiKey: 'No web API key for this project',
+    authDomain: 'productiondashboard-373120.firebaseapp.com',
+    projectId: 'productiondashboard-373120',
+  });
+
+  // Get a reference to the Cloud Firestore database
+  const db = firebase.firestore();
+
+  // Set the name of the Cloud Firestore collection
+  const collectionName = 'production';
+
+  function addToList(event, column) {
+    // Prevent the form from submitting
+    event.preventDefault();
+
+    // Get the input element and value for the given column
+    const inputId = column + 'Input';
+    const input = document.getElementById(inputId);
+    const value = input.value;
+    
+    // Get the ul element for the given column
+    const listId = column + 'List';
+    const list = document.getElementById(listId);
+
+    // Create a new li element and set its text content to the value
+    const li = document.createElement('li');
+    li.textContent = value;
+
+    // Add a click event handler to the li element to remove it from the list
+    li.addEventListener('click', () => {
+      // Remove the li element from the list
+      li.remove();
+
+      // Find the document in the Cloud Firestore collection with the same value as the li element
+      db.collection(collectionName).where('value', '==', value).get().then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          // Delete the document from the collection
+          doc.ref.delete();
+        });
+      });
+    });
+
+    // Add the li element to the list
+    list.appendChild(li);
+
+    // Clear the input element
+    input.value = '';
+
+    // Add the item to the Cloud Firestore collection
+    db.collection(collectionName).add({
+      column: column,
+      value: value,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+    });
+  }
+
+  // Retrieve the items from the Cloud Firestore collection and display them on the page
+  db.collection(collectionName).get().then((querySnapshot) => {
+    querySnapshot.forEach((doc) => {
+      // Get the column and value from the document
+      const data = doc.data();
+      const column = data.column;
+      const value = data.value;
+
+      // Get the ul element for the given column
+      const listId = column + 'List';
+      const list = document.getElementById(listId);
+
+      // Create a new li element and set its text content to the value
+      const li = document.createElement('li');
+      li.textContent = value;
+
+      // Add a click event handler to the li element to remove it from the list
+      li.addEventListener('click', () => {
+            // Remove the li element from the list
+        li.remove();
+
+        // Find the document in the Cloud Firestore collection with the same value as the li element
+        db.collection(collectionName).where('value', '==', value).get().then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            // Delete the document from the collection
+            doc.ref.delete();
+          });
+        });
+      });
+
+      // Add the li element to the list
+      list.appendChild(li);
+    });
+  });
+      
+      function updateClock() {
+  var currentTime = new Date();
+  var hours = currentTime.getHours();
+  var minutes = currentTime.getMinutes();
+  var seconds = currentTime.getSeconds();
+
+  if (minutes < 10) {
+    minutes = "0" + minutes;
+  }
+  if (seconds < 10) {
+    seconds = "0" + seconds;
+  }
+
+  var clockText = hours + ":" + minutes + ":" + seconds;
+  document.getElementById("header-clock").innerHTML = clockText;
+}
+
+setInterval(updateClock, 1000);
+
+</script>
+     <iframe src="https://form.jotform.com/223630864799369"width="100%" height="1000">></iframe><BR></BR>
+    <iframe src="https://view.monday.com/embed/2908290534-e6849e7b3fd5254196241273bac057b6?r=use1" width=90% height=2000 style="border: 0; box-shadow: 5px 5px 56px 0px rgba(0,0,0,0.25);"></iframe>
+  </body>
+</html>
