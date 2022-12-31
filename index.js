@@ -10,3 +10,10 @@ app.get('/', (req, res) => {
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
 });
+
+      
+      app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', 'https://mpmipxfvpc.us-east-1.awsapprunner.com');
+  next();
+});
+
