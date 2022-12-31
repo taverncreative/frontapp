@@ -6,48 +6,54 @@
     <div id="csv-data"></div>
     <script>
 
-// JavaScript
 const dataContainer = document.getElementById("csv-data");
 
-fetch("https://raw.githubusercontent.com/taverncreative/frontapp/509fa72a4b964959eac3504f199d3014effba157/data.csv")
+fetch("https://raw.githubusercontent.com/taverncreative/frontapp/data.csv")
   .then(response => response.text())
   .then(data => {
+    // Split rows by newline character
     const rows = data.split("\n");
 
-    // Parse "visits per day" values as numbers and sort rows by "visits per day" value
+    // Sort rows by ascending visits per day
     rows.sort((a, b) => {
-const aVisits = parseInt(a.split(",")[1]);
-const bVisits = parseInt(b.split(",")[1]);
-if (aVisits < bVisits) {
-return -1;
-} else if (aVisits > bVisits) {
-return 1;
-} else {
-return 0;
-}
-});
-  // Keep track of current row
-let currentRow = 0;
+      const aVisits = parseInt(a.split(",")[1]);
+      const bVisits = parseInt(b.split(",")[1]);
+      if (aVisits < bVisits) {
+        return -1;
+      } else if (aVisits > bVisits) {
+        return 1;
+      } else {
+        return 0;
+      }
+    });
 
-// Create and append row element for current row
-const rowElement = document.createElement("div");
-const headingElement = document.createElement("h2");
-const paragraphElement = document.createElement("p");
-const cells = rows[currentRow].split(",");
-headingElement.innerHTML = cells[0];
-paragraphElement.innerHTML = cells[1];
-rowElement.appendChild(headingElement);
-rowElement.appendChild(paragraphElement);
-dataContainer.appendChild(rowElement);
+    // Keep track of current row
+    let currentRow = 0;
 
-// Add click handler to row element that increments current row and updates content
-rowElement.addEventListener("click", () => {
-  currentRow++;
-  const cells = rows[currentRow].split(",");
-  headingElement.innerHTML = cells[0];
-  paragraphElement.innerHTML = cells[1];
-});
-});
+    // Create and append row element for current row
+    const rowElement = document.createElement("div");
+    const headingElement = document.createElement("h2");
+    const paragraphElement = document.createElement("p");
+    const cells = rows[currentRow].split(",");
+    headingElement.innerHTML = cells[0];
+    paragraphElement.innerHTML = cells[1];
+    rowElement.appendChild(headingElement);
+    rowElement.appendChild(paragraphElement);
+    dataContainer.appendChild(rowElement);
+
+    // Add click handler to row element that increments current row and updates content
+    rowElement.addEventListener("click", () => {
+      currentRow++;
+      if (currentRow >= rows.length) {
+        // Reset current row to first row if we reach the end of the rows
+        currentRow = 0;
+      }
+      const cells = rows[currentRow].split(",");
+      headingElement.innerHTML = cells[0];
+      paragraphElement.innerHTML = cells[1];
+    });
+  });
+
     </script>
   </body>
 </html>
