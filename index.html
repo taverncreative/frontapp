@@ -1,72 +1,29 @@
 <html>
 <head>
-  <style>
-    #dropbox {
-  border: 2px dashed #ccc;
-  width: 500px;
-  height: 200px;
-  line-height: 200px;
-  text-align: center;
-  font-size: 24px;
-  color: #ccc;
-}
-
-#dropbox.drag-over {
-  border-color: #000;
-  color: #000;
+  <title>PDF Collator</title>
+<style>
+  #file-input {
+  display: none;
 }
   </style>
-  <title>PDF Collator</title>
 </head>
 <body>
   <h1>PDF Collator</h1>
-  <p>Drag and drop your PDF files into the dropbox below:</p>
-  <div id="dropbox"></div>
+  <p>Click the "Upload Files" button to select your PDF files:</p>
+  <input type="file" id="file-input" multiple>
   <button id="generate-csv-button">Generate CSV</button>
-  <script><
-const dropbox = document.getElementById('dropbox');
+  <script>
+    
+    const fileInput = document.getElementById('file-input');
 const generateCSVButton = document.getElementById('generate-csv-button');
 
-// Handle drag and drop events
-dropbox.addEventListener('dragenter', handleDragEnter);
-dropbox.addEventListener('dragleave', handleDragLeave);
-dropbox.addEventListener('dragover', handleDragOver);
-dropbox.addEventListener('drop', handleDrop);
-
-// Add a "drag-over" class to the dropbox when a file is being dragged over it
-function handleDragEnter(event) {
-  event.stopPropagation();
-  event.preventDefault();
-  dropbox.classList.add('drag-over');
-}
-
-// Remove the "drag-over" class from the dropbox when a file is no longer being dragged over it
-function handleDragLeave(event) {
-  event.stopPropagation();
-  event.preventDefault();
-  dropbox.classList.remove('drag-over');
-}
-
-// Prevent the default behavior when a file is dragged over the dropbox
-function handleDragOver(event) {
-  event.stopPropagation();
-  event.preventDefault();
-}
-
-// Parse the PDF files and store the data in the pdfData array when the files are dropped in the dropbox
+// Parse the PDF files and store the data in the pdfData array when the files are selected using the file input
 let pdfData = [];
-function handleDrop(event) {
-  // Prevent the default behavior of the drop event (which is to open the dropped files in the browser)
-  event.stopPropagation();
-  event.preventDefault();
+function handleFileSelect(event) {
+  // Get the selected files
+  const files = event.target.files;
 
-  // Remove the "drag-over" class from the dropbox
-  dropbox.classList.remove('drag-over');
-
-  // Get the dropped files
-  const files = event.dataTransfer.files;
-
-  // Iterate through the dropped files and parse the PDF files
+  // Iterate through the selected files and parse the PDF files
   for (const file of files) {
     if (file.type === 'application/pdf') {
       // Use a PDF parsing library to parse the PDF file and store the data in the pdfData array
@@ -104,7 +61,6 @@ function generateCSVFromData(data) {
   return csvWithoutHyphens;
 }
 
-  
-      /script>
+    </script>
 </body>
 </html>
