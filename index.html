@@ -24,7 +24,7 @@
   <div id="dropbox"></div>
   <button id="generate-csv-button">Generate CSV</button>
   <script><
-    const dropbox = document.getElementById('dropbox');
+const dropbox = document.getElementById('dropbox');
 const generateCSVButton = document.getElementById('generate-csv-button');
 
 // Handle drag and drop events
@@ -75,24 +75,35 @@ function handleDrop(event) {
   }
 }
 
-
 // Generate a CSV file from the pdfData array when the "Generate CSV" button is clicked
 generateCSVButton.addEventListener('click', () => {
   // Use a CSV generation library to generate a CSV file from the pdfData array
-  generateCSV(pdfData);
+  const csv = generateCSVFromData(pdfData);
+
+  // Remove hyphens from the CSV file
+  const csvWithoutHyphens = csv.replace(/-/g, '');
+
+  // Do something with the CSV file, such as download it or display it to the user
+  downloadCSV(csvWithoutHyphens);
 });
 
 // This is just a placeholder function for the PDF parsing and CSV generation steps
 // You will need to replace this with code that uses a library to parse the PDF files and generate a CSV file
 function parsePDF(file) {
-// Placeholder code
-return { data: 'Parsed PDF data' };
+  // Placeholder code
+  return { data: 'Parsed PDF data' };
 }
 
-function generateCSV(data) {
-// Placeholder code
-console.log('Generating CSV file from data:', data);
+function generateCSVFromData(data) {
+  // Use a CSV generation library to generate a CSV file from the data
+  const csv = generateCSV(data);
+
+  // Remove hyphens from the CSV file
+  const csvWithoutHyphens = csv.replace(/-/g, '');
+
+  return csvWithoutHyphens;
 }
+
   
       /script>
 </body>
