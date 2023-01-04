@@ -8,10 +8,16 @@
   </style>
 </head>
 <body>
+   <title>PDF Collator</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
   <h1>PDF Collator</h1>
   <p>Click the "Upload Files" button to select your PDF files:</p>
+  <button id="upload-button">Upload Files</button>
   <input type="file" id="file-input" multiple>
   <button id="generate-csv-button">Generate CSV</button>
+  <script src="script.js"></script>
   <script>
     
     const fileInput = document.getElementById('file-input');
