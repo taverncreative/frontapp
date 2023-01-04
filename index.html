@@ -53,13 +53,20 @@ function handleDragOver(event) {
   event.preventDefault();
 }
 
-// Parse the PDF files and store the data in an array when the files are dropped in the dropbox
+// Parse the PDF files and store the data in the pdfData array when the files are dropped in the dropbox
 let pdfData = [];
 function handleDrop(event) {
+  // Prevent the default behavior of the drop event (which is to open the dropped files in the browser)
   event.stopPropagation();
   event.preventDefault();
+
+  // Remove the "drag-over" class from the dropbox
   dropbox.classList.remove('drag-over');
+
+  // Get the dropped files
   const files = event.dataTransfer.files;
+
+  // Iterate through the dropped files and parse the PDF files
   for (const file of files) {
     if (file.type === 'application/pdf') {
       // Use a PDF parsing library to parse the PDF file and store the data in the pdfData array
@@ -67,6 +74,7 @@ function handleDrop(event) {
     }
   }
 }
+
 
 // Generate a CSV file from the pdfData array when the "Generate CSV" button is clicked
 generateCSVButton.addEventListener('click', () => {
