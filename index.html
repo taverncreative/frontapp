@@ -1,53 +1,91 @@
 <html>
-  <head>
-    <title>CSV Reader</title>
-  </head>
-  <body>
-   <center><b><h1> <div id="csv-data"></div>
-    <script>
-
-// Check if a counter value is stored in session storage
-if (sessionStorage.getItem('counter')) {
-  counter = parseInt(sessionStorage.getItem('counter'));
+<head>
+  <style>
+    #dropbox {
+  border: 2px dashed #ccc;
+  width: 500px;
+  height: 200px;
+  line-height: 200px;
+  text-align: center;
+  font-size: 24px;
+  color: #ccc;
 }
 
-const dataContainer = document.getElementById("csv-data");
-let counter = 0;
+#dropbox.drag-over {
+  border-color: #000;
+  color: #000;
+}
+  </style>
+  <title>PDF Collator</title>
+</head>
+<body>
+  <h1>PDF Collator</h1>
+  <p>Drag and drop your PDF files into the dropbox below:</p>
+  <div id="dropbox"></div>
+  <button id="generate-csv-button">Generate CSV</button>
+  <script><
+    const dropbox = document.getElementById('dropbox');
+const generateCSVButton = document.getElementById('generate-csv-button');
 
-fetch("https://raw.githubusercontent.com/taverncreative/frontapp/data.csv")
-  .then(response => response.text())
-  .then(data => {
-    // Split the CSV data into rows
-    const rows = data.split("\n");
+// Handle drag and drop events
+dropbox.addEventListener('dragenter', handleDragEnter);
+dropbox.addEventListener('dragleave', handleDragLeave);
+dropbox.addEventListener('dragover', handleDragOver);
+dropbox.addEventListener('drop', handleDrop);
 
-    // Sort the rows by the 'Views Per Day' column
-    rows.sort((row1, row2) => {
-      const cells1 = row1.split(",");
-      const cells2 = row2.split(",");
-      return cells1[1] - cells2[1];
-    });
+// Add a "drag-over" class to the dropbox when a file is being dragged over it
+function handleDragEnter(event) {
+  event.stopPropagation();
+  event.preventDefault();
+  dropbox.classList.add('drag-over');
+}
 
-    // Display the rows in the data container
-    for (let i = 0; i < rows.length; i++) {
-      const row = rows[i];
-      const cells = row.split(",");
-      const rowElement = document.createElement("div");
-      const headingElement = document.createElement("h2");
-      const paragraphElement = document.createElement("p");
-      headingElement.innerHTML = cells[0];
-      paragraphElement.innerHTML = cells[1];
-      rowElement.appendChild(headingElement);
-      rowElement.appendChild(paragraphElement);
-      rowElement.addEventListener("click", () => {
-        counter++;
-        const nextCells = rows[counter].split(",");
-        headingElement.innerHTML = nextCells[0];
-        paragraphElement.innerHTML = nextCells[1];
-      });
-      dataContainer.appendChild(rowElement);
+// Remove the "drag-over" class from the dropbox when a file is no longer being dragged over it
+function handleDragLeave(event) {
+  event.stopPropagation();
+  event.preventDefault();
+  dropbox.classList.remove('drag-over');
+}
+
+// Prevent the default behavior when a file is dragged over the dropbox
+function handleDragOver(event) {
+  event.stopPropagation();
+  event.preventDefault();
+}
+
+// Parse the PDF files and store the data in an array when the files are dropped in the dropbox
+let pdfData = [];
+function handleDrop(event) {
+  event.stopPropagation();
+  event.preventDefault();
+  dropbox.classList.remove('drag-over');
+  const files = event.dataTransfer.files;
+  for (const file of files) {
+    if (file.type === 'application/pdf') {
+      // Use a PDF parsing library to parse the PDF file and store the data in the pdfData array
+      pdfData.push(parsePDF(file));
     }
-  });
+  }
+}
 
-    </script>
-  </body>
+// Generate a CSV file from the pdfData array when the "Generate CSV" button is clicked
+generateCSVButton.addEventListener('click', () => {
+  // Use a CSV generation library to generate a CSV file from the pdfData array
+  generateCSV(pdfData);
+});
+
+// This is just a placeholder function for the PDF parsing and CSV generation steps
+// You will need to replace this with code that uses a library to parse the PDF files and generate a CSV file
+function parsePDF(file) {
+// Placeholder code
+return { data: 'Parsed PDF data' };
+}
+
+function generateCSV(data) {
+// Placeholder code
+console.log('Generating CSV file from data:', data);
+}
+  
+      /script>
+</body>
 </html>
